@@ -27,8 +27,6 @@
       <input type="text" v-model="comment">
       <button type="button" @click="addTodo(comment); deleteText()">追加</button>
     </form>
-    {{ radio }}<br>
-    {{ $store.state.todos }}
   </div>
 </div>
 </template>
