@@ -13,13 +13,11 @@
         <th>コメント</th>
         <th>状態</th>
       </tr>
-      <tr v-for="(todo, index) in $store.state.todos" :key="index">
-        <template v-if="checkState(todo)">
-          <td>{{ index }}</td>
-          <td>{{ todo['Comment'] }}</td>
-          <td><button type="button" @click="changeState">{{ todo['State'] }}</button></td>
-          <td><button type="button" @click="deleteTodo">削除</button></td>
-        </template>
+      <tr v-for="(todo, index) in checkState" :key="index">
+        <td>{{ todo['id'] }}</td>
+        <td>{{ todo['Comment'] }}</td>
+        <td><button type="button" @click="changeState">{{ todo['State'] }}</button></td>
+        <td><button type="button" @click="deleteTodo">削除</button></td>
       </tr>
     </table>
     <h2>新規タスクの追加</h2>
@@ -32,7 +30,7 @@
 </template>
 
 <script>
-import { todos } from './store/index.js'
+import { todos, addID } from './store/index.js'
 import { mapMutations } from 'vuex'
 
 export default {
@@ -40,30 +38,28 @@ export default {
   data: () => {
     return {
       todos,
-      // 下記2つの定義値は一時的にしか使用にないためvuexで値を持たせる必要がないと判断した
+      addID,
       radio: 'すべて',
       comment: ''
     }
   },
   methods: {
-    // ストアに定義してあるtodosを使う関数のみマッピングした
-    // deleteText()とcheckState(todo)はtodosを使わないためマッピングの必要がないと判断した
     ...mapMutations(['addTodo', 'deleteTodo', 'changeState']),
     deleteText() {
       this.comment = ''
-    },
-    // ラジオボタンに応じて全てのtodoの状態を確認してソート
-    checkState(todo) {
-      if (this.radio === 'すべて') {
-        return true
-      } else if (
-        (this.radio === '作業中' && this.radio === todo['State']) ||
-        (this.radio === '完了' && this.radio === todo['State'])
-      ) {
-        return true
-      } else {
-        return false
-      }
+    }
+  },
+  computed: {
+    checkState() {
+      return this.$store.getters.getTodos.filter(todo => {
+        if (this.radio === 'すべて') {
+          return todo
+        } else if (this.radio === '作業中') {
+          return todo['State'] === '作業中'
+        } else if (this.radio === '完了') {
+          return todo['State'] === '完了'
+        }
+      })
     }
   }
 }
