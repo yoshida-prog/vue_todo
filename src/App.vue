@@ -51,7 +51,8 @@ export default {
   },
   computed: {
     checkState() {
-      return this.$store.getters.getTodos.filter(todo => {
+      const TodoList = this.$store.getters.getTodos
+      return TodoList.filter(todo => {
         if (this.radio === 'すべて') {
           return todo
         } else if (this.radio === '作業中') {
